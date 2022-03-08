@@ -80,15 +80,39 @@ def next_user(t, ch):
             else:
                 print("This cell is occupied! Choose another one!")
 
+def game(first, second):
+    t = "_________"
+    while True:
+        if first == 'user':
+            t = next_user(t, 'X')
+        else:
+            t = next_comp(t, 'X')
+        if not analyze(t):
+            break
+        if second == 'user':
+            t = next_user(t, 'O')
+        else:
+            t = next_comp(t, 'O')
+        if not analyze(t):
+            break
+
 
 def main():
     t_board = "_________"
-    draw(t_board)
+    cmds = {'user', 'easy'}
+    # draw(t_board)
     while True:
-        t_board = next_user(t_board, 'X')
-        if not analyze(t_board):
+        cmd = input('Input command: ')
+        if cmd == 'exit':
             break
-        t_board = next_comp(t_board, 'O')
+        cmd = cmd.split()
+        if len(cmd) < 3 or cmd[0] != 'start' \
+                or cmd[1] not in cmds or cmd[2] not in cmds:
+            print('Bad parameters!')
+            continue
+        draw(t_board)
+        game(cmd[1], cmd[2])
+        break
 
 
 if __name__ == "__main__":
