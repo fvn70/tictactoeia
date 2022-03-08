@@ -9,8 +9,6 @@ win_combos = (
 
 def get_winner(board):
     win = None
-    if abs(board.count('X') - board.count('O')) > 1:
-        return "Impossible"
     for player in ('X', 'O'):
         for combos in win_combos:
             if board[combos[0]] == player \
@@ -51,13 +49,29 @@ def analyze(board):
     return False
 
 
-def next_comp(t, ch):
-    moves = [i for i, c in enumerate(t) if c == '_']
-    shuffle(moves)
-    k = moves[0]
-    t = t[:k] + ch + t[k + 1:]
+def next_medium(board, ch):
+    _moves = [i for i, c in enumerate(board) if c == '_']
+    _ch = 'O' if ch == 'X' else 'X'
+    print('Making move level "medium"')
+    for k in _moves:
+        t = board[:k] + ch + board[k + 1:]
+        _t = board[:k] + _ch + board[k + 1:]
+        if get_winner(t) == ch:
+            return t
+        elif get_winner(_t) == _ch:
+            return t
+    shuffle(_moves)
+    k = _moves[0]
+    t = board[:k] + ch + board[k + 1:]
+    return t
+
+
+def next_easy(board, ch):
+    _moves = [i for i, c in enumerate(board) if c == '_']
+    shuffle(_moves)
+    k = _moves[0]
+    t = board[:k] + ch + board[k + 1:]
     print('Making move level "easy"')
-    draw(t)
     return t
 
 
@@ -72,34 +86,38 @@ def next_user(t, ch):
             row, col = digs.split()
             k = 3 * (int(row) - 1) + int(col) -1
             if t[k] == '_':
-                # ch = "X" if isXgo else "O"
                 t = t[:k] + ch + t[k + 1:]
-                # isXgo = not isXgo
-                draw(t)
                 return t
             else:
                 print("This cell is occupied! Choose another one!")
+
 
 def game(first, second):
     t = "_________"
     while True:
         if first == 'user':
             t = next_user(t, 'X')
+        elif first == 'easy':
+            t = next_easy(t, 'X')
         else:
-            t = next_comp(t, 'X')
+            t = next_medium(t, 'X')
+        draw(t)
         if not analyze(t):
             break
         if second == 'user':
             t = next_user(t, 'O')
+        elif second == 'easy':
+            t = next_easy(t, 'O')
         else:
-            t = next_comp(t, 'O')
+            t = next_medium(t, 'O')
+        draw(t)
         if not analyze(t):
             break
 
 
 def main():
     t_board = "_________"
-    cmds = {'user', 'easy'}
+    cmds = {'user', 'easy', 'medium'}
     # draw(t_board)
     while True:
         cmd = input('Input command: ')
